@@ -1,0 +1,140 @@
+Option Base 1
+Public i As Integer
+Sub Arrange_and_Sort()
+Application.ScreenUpdating = False
+
+'Created by Alejandro Jimenez (Quote Specialist) June 2017
+'jimenezmalejandro@gmail.com
+
+
+
+'********************************
+'Re-arrange column order
+'********************************
+    Dim highestPriceCol As Range
+    Dim arrColOrder As Variant, ndx As Integer
+    Dim Found As Range, counter As Integer
+
+ arrColOrder = Array("Part Number", "Part Description", "Target Price", "Commodity Code", "Supplier Name", "Mfg Name", "Mfg Part Number", "Corrected Mfg PN", "LT", "No Bid", "MOQ/SPQ", "No bid/Price Break", "Volume Vol. #1", "Price Vol. #1", "Price Buffer Vol. #1", "Volume Vol. #2", "Price Vol. #2", "Price Buffer Vol. #2", "Volume Vol. #3", "Price Vol. #3", "Price Buffer Vol. #3", "Volume Vol. #4", "Price Vol. #4", "Price Buffer Vol. #4", "Volume Vol. #5", "Price Vol. #5", "Price Buffer Vol. #5", "Volume Vol. #6", "Price Vol. #6", "Price Buffer Vol. #6", "Volume Vol. #7", "Price Vol. #7", "Price Buffer Vol. #7", "Volume Vol. #8", "Price Vol. #8", "Price Buffer Vol. #8", "Volume Vol. #9", "Price Vol. #9", "Price Buffer Vol. #9", "Volume Vol. #10", "Price Vol. #10", "Price Buffer Vol. #10", "LT(Wks)", "Long Comment", "MOQ", "Pkg Qty", "Packaging", "Short Comment", "Delivery Term", "Payment Terms", "No Bid Reason", "SANMInternalComments", "Units", "Currency", "Converted Currency")
+    counter = 1
+    Application.ScreenUpdating = False
+    For ndx = LBound(arrColOrder) To UBound(arrColOrder)
+        Set Found = rows("1:1").Find(arrColOrder(ndx), LookIn:=xlValues, Lookat:=xlWhole, SearchOrder:=xlByColumns, SearchDirection:=xlNext, MatchCase:=False)
+        If Not Found Is Nothing Then
+            If Found.Column <> counter Then
+                Found.EntireColumn.Cut
+                Columns(counter).Insert Shift:=xlToRight
+                Application.CutCopyMode = False
+            End If
+            counter = counter + 1
+        End If
+    Next ndx
+    
+   
+
+'**********<>****************************************Here****************************************************
+
+
+Dim numOfCols As Integer
+Dim array1(1) As String
+Dim num As String
+
+
+numOfCols = Range(("A1"), Range("A1").End(xlToRight)).Count
+Set headerRange = Range(("A1"), Range("A1").End(xlToRight))
+
+    For i = 1 To numOfCols
+        
+           If Mid(Cells(1, i), 1, 12) = "Price Vol. #" Then
+            array1(1) = Cells(1, i)
+            
+                End If
+            Next i
+            
+num = Mid(array1(1), Len(array1(1)), Len(array1(1)) - 1)
+
+'***************</END***********************************Here****************************************************
+
+
+'********************************
+'sort by CPN and price
+'********************************
+With ActiveSheet
+    With .Range("A1").Select
+Range(Selection, Selection.End(xlDown)).Select
+Range(Selection, Selection.End(xlToRight)).Select
+    End With
+    
+        .Cells.Sort Key1:=.Columns(Application.Match("Part Number", .rows(1), 0)), Order1:=xlAscending, _
+                    key2:=.Columns(Application.Match("Price Vol. #" & num, .rows(1), 0)), Order2:=xlAscending, _
+            Orientation:=xlTopToBottom, header:=xlYes
+                    
+                          
+                
+                
+            End With
+            
+            Columns("B:B").Select
+    Selection.Insert Shift:=xlToRight
+    
+   [B1] = IIf([a1] = [a1], "true", "false")
+   
+'********************************************
+   'Compare if CPN is same
+'********************************************
+
+   
+   'Dim i As Integer  'Selecting all data
+For i = 2 To Range(("A1"), Range("A1").End(xlDown)).Count
+    If Range("A" & i).Value = Range("A" & i - 1).Value Then
+        Range("B" & i).Value = "True"
+        Else: Range("B" & i).Value = "False"
+    End If
+Next
+           
+'********************************************
+'Separate by CPN with a border
+'********************************************
+
+Dim d As Long, Ran1 As Range, Ran2 As Range
+
+For d = 1 To Range(("A1"), Range("A1").End(xlDown)).Count
+
+    Set Ran1 = Range("B" & d)
+    Set Ran2 = Range("A" & d & ":BU" & d)
+
+    If Ran1.Value = False Then Ran2.Borders(xlEdgeTop).LineStyle = xlContinuous
+    
+
+                        
+                                          
+   Next d
+            
+            Columns(2).EntireColumn.Delete
+            
+'             Columns("A:BM").Select
+'Selection.ColumnWidth = 17
+'    Columns("C").Select
+'Selection.ColumnWidth = 8
+'    Columns("D").Select
+'Selection.ColumnWidth = 7
+'Columns("D").Select
+'Selection.ColumnWidth = 7
+
+Columns("A:BM").ColumnWidth = 17
+Columns("C").ColumnWidth = 8
+Columns("D").ColumnWidth = 7
+Columns("I").ColumnWidth = 5
+Columns("J").ColumnWidth = 9.25
+
+            'ThisWorkbook.Close False
+            
+            
+End Sub
+
+
+
+
+
+
+
